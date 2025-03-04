@@ -1,0 +1,42 @@
+Architectural flow:
+1. client sends a post request to an API gateway
+2. the request is then sent to the broadcast service through the internal API
+3. after checking and signing the data, the broadcast service sends a req
+
+API Layer:
+    -> exposes internal RESTful endpoint for broadcast requests
+    -> validates request 
+    -> routes the request to the application layer
+
+Application layer:
+    -> Validates input (valid transaction)
+    -> adds the request into the database that stores transactions (status = processing),
+        -> sends the request to a persistent transaction queue,
+            -> returns 200 OK to API Layer if added to the queue and database successfully.
+            -> if failed to add to queue, remove the request from the database. return http error msg (4xx)
+        -> if failed, return http error msg (4xx)
+
+Database to store all transaction requests:
+    -> transaction
+    -> status (success, failed, processing)
+
+Persistent Queue:
+    -> ensures that transactions are not lost.
+    Queue contains:
+        1. transaction
+        2. retry count (default to 0)
+
+Worker node(s) to consume from the queue:
+    -> signs the data
+    -> sends the signed transaction to blockchain node through RPC
+    -> if success 
+        -> updates database (status to success for that transaction)
+    -> if fails
+        -> if retry count is less than 2, adds back to the queue and update retry count +1. (retry up to 2 times)
+        -> if retry count = 2 (retried twice already)
+            -> sends the transaction to a deadletter queue and update status in database to failed
+
+Admin to retry:
+    -> admin can retry failed broadcast by sending the transaction from the database to a reserved worker node to immediately 
+        connect to a blockchain node.
+    -> admin can also view the dead-letter queue to view the error messages that caused the broadcast to fail previously.
