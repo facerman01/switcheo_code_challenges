@@ -16,6 +16,15 @@ service Msg {
   // UpdateParams defines a (governance) operation for updating the module
   // parameters. The authority defaults to the x/gov module account.
   rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
+
+  // CreateResource defines a method for creating a new resource.
+  rpc CreateResource(MsgCreateResource) returns (MsgCreateResourceResponse);
+
+  // UpdateResource defines a method for updating an existing resource.
+  rpc UpdateResource(MsgUpdateResource) returns (MsgUpdateResourceResponse);
+
+  // DeleteResource defines a method for deleting a resource.
+  rpc DeleteResource(MsgDeleteResource) returns (MsgDeleteResourceResponse);
 }
 
 // MsgUpdateParams is the Msg/UpdateParams request type.
@@ -38,3 +47,44 @@ message MsgUpdateParams {
 // MsgUpdateParamsResponse defines the response structure for executing a
 // MsgUpdateParams message.
 message MsgUpdateParamsResponse {}
+
+// MsgCreateResource defines the Msg/CreateResource request type.
+message MsgCreateResource {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "mychain/x/resource/MsgCreateResource";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string name = 2;
+  string description = 3;
+}
+
+// MsgCreateResourceResponse defines the Msg/CreateResource response type.
+message MsgCreateResourceResponse {
+  uint64 id = 1;
+}
+
+// MsgUpdateResource defines the Msg/UpdateResource request type.
+message MsgUpdateResource {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "mychain/x/resource/MsgUpdateResource";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 id = 2;
+  string name = 3;
+  string description = 4;
+}
+
+// MsgUpdateResourceResponse defines the Msg/UpdateResource response type.
+message MsgUpdateResourceResponse {}
+
+// MsgDeleteResource defines the Msg/DeleteResource request type.
+message MsgDeleteResource {
+  option (cosmos.msg.v1.signer) = "creator";
+  option (amino.name) = "mychain/x/resource/MsgDeleteResource";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 id = 2;
+}
+
+// MsgDeleteResourceResponse defines the Msg/DeleteResource response type.
+message MsgDeleteResourceResponse {}

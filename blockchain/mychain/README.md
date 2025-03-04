@@ -1,4 +1,4 @@
-How to run/test the blockchain.
+Built using "ignite scaffold list name:string description:string"
 
 # 1. run the Dockerfile
 

@@ -1,9 +1,14 @@
 services:
   blockchain:
-    build: .
+    build:
+      context: .
     container_name: blockchain-node
     ports:
-      - "8080:8080"
+      - "1317:1317"
+      - "26657:26657"
+      - "9090:9090"
+    tty: true
+    stdin_open: true
     volumes:
       - ./data:/app/data
     restart: unless-stopped
